@@ -1,53 +1,54 @@
 <?php
-//memulai session atau melanjutkan session yang sudah ada
+// Memulai session atau melanjutkan session yang sudah ada
 session_start();
 
-//menyertakan code dari file koneksi
+// Menyertakan code dari file koneksi
 include "koneksi.php";
 
-//check jika sudah ada user yang login arahkan ke halaman admin
+// Check jika sudah ada user yang login arahkan ke halaman admin
 if (isset($_SESSION['username'])) { 
-	 
+    header("location:admin.php"); 
+    exit();
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $username = $_POST['username'];
-  
-  //menggunakan fungsi enkripsi md5 supaya sama dengan password  yang tersimpan di database
-  $password = md5($_POST['password']);
+    $username = trim($_POST['username']);
+    $password = $_POST['password']; // Jangan hash dulu
 
-	//prepared statement
-  $stmt = $conn->prepare("SELECT username 
-                          FROM user 
-                          WHERE username=? AND password=?");
+    // Prepared statement untuk mengambil user berdasarkan username
+    $stmt = $conn->prepare("SELECT username, password FROM user WHERE username = ?");
+    if ($stmt === false) {
+        die("Prepare failed: " . htmlspecialchars($conn->error));
+    }
 
-	//parameter binding 
-  $stmt->bind_param("ss", $username, $password);//username string dan password string
-  
-  //database executes the statement
-  $stmt->execute();
-  
-  //menampung hasil eksekusi
-  $hasil = $stmt->get_result();
-  
-  //mengambil baris dari hasil sebagai array asosiatif
-  $row = $hasil->fetch_array(MYSQLI_ASSOC);
-
-  //check apakah ada baris hasil data user yang cocok
-  if (!empty($row)) {
-    //jika ada, simpan variable username pada session
-    $_SESSION['username'] = $row['username'];
-
-    //mengalihkan ke halaman admin
-    header("location:admin.php");
-  } else {
-	  //jika tidak ada (gagal), alihkan kembali ke halaman login
-    header("location:login.php");
-  }
-
-	//menutup koneksi database
-  $stmt->close();
-  $conn->close();
+    // Binding parameter
+    $stmt->bind_param("s", $username);
+    
+    // Eksekusi statement
+    $stmt->execute();
+    
+    // Mendapatkan hasil
+    $hasil = $stmt->get_result();
+    $row = $hasil->fetch_assoc();
+    
+    // Memeriksa apakah user ada dan password cocok
+    if ($row && password_verify($password, $row['password'])) {
+        // Jika password cocok, simpan username pada session
+        $_SESSION['username'] = $row['username'];
+        
+        // Mengalihkan ke halaman admin
+        header("location:admin.php");
+        exit();
+    } else {
+        // Jika tidak ada atau password salah, tampilkan pesan error atau alihkan kembali
+        // Anda bisa menambahkan pesan error di form login jika diinginkan
+        header("location:login.php?error=1");
+        exit();
+    }
+    
+    // Menutup koneksi
+    $stmt->close();
+    $conn->close();
 } else {
 ?>
 <!DOCTYPE html>
@@ -98,10 +99,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="col-md-4" style="margin-left: 95px;"> 
                         <div class="card text-bg-light text-center" style="max-width: 20rem;">
                             <div class="card-body">
-                            <?php
-                            $username = "admin";
-                            $password = "12345";
-                            ?>               
+                            <div class="text-center mb-3">
+                                        <i class="bi bi-person-circle h1 display-4"></i>
+                                        <p>Welcome to My Daily Journal</p>
+                                        <hr />
+                                    </div>
+
+                                    <!-- Tampilkan pesan error jika ada -->
+                                    <?php if(isset($_GET['error'])): ?>
+                                        <div class="alert alert-danger" role="alert">
+                                            Username atau Password salah.
+                                        </div>
+                                    <?php endif; ?>
+
                               <form method="post">
                                   <div class="mb-3">
                                       <label for="username" class="form-label">Username:</label>
