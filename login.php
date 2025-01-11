@@ -77,6 +77,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <li class="nav-item">
                   <a class="nav-link" href="index.php#article">Article</a>
                 </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="index.php#profil">ptofil</a>
+                </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="index.php#schedule">jadwal</a>
+                </li>
                 
                 <li class="nav-item">
                     <a class="nav-link" href="index.php#gallery">Gallery</a>

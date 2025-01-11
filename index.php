@@ -11,7 +11,7 @@ $hasil2 = $conn->query($sql2);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Latihan-boostrap</title>
+    <title>Daily journal</title>
     <link rel="icon" href="img/logo.png" />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -43,6 +43,12 @@ $hasil2 = $conn->query($sql2);
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#article">Article</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#Schedule">Jadwal</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#profil">Profil</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#gallery">Gallery</a>
